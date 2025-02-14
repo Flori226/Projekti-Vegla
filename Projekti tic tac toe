@@ -64,3 +64,128 @@ bool isBoardFull() {
     }
     return true;
 }
+int minimax(int depth, bool isMaximizing) {
+    if (checkWin()) {
+        return isMaximizing ? -10 : 10;
+    }
+    if (isBoardFull()) {
+        return 0;
+    }
+
+    int best = (isMaximizing) ? -1000 : 1000;
+
+   
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] != 'X' && board[i][j] != 'O') {
+                char current = board[i][j];
+                board[i][j] = (isMaximizing) ? 'O' : 'X';
+
+                int score = minimax(depth + 1, !isMaximizing);
+                board[i][j] = current;
+
+                best = (isMaximizing) ? max(best, score) : min(best, score);
+            }
+        }
+    }
+    return best;
+}
+
+
+int bestMove() {
+    int bestVal = -1000;
+    int move = -1;
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] != 'X' && board[i][j] != 'O') {
+                char current = board[i][j];
+                board[i][j] = 'O';  // AI move
+                int moveVal = minimax(0, false);
+                board[i][j] = current;
+
+                if (moveVal > bestVal) {
+                    move = i * 3 + j + 1;  // Convert position to 1-9
+                    bestVal = moveVal;
+                }
+            }
+        }
+    }
+
+    return move;
+}
+
+
+void aiRandomMove() {
+    int slot;
+    do {
+        slot = rand() % 9 + 1;  // Random move between 1 and 9
+    } while (board[(slot - 1) / 3][(slot - 1) % 3] == 'X' || board[(slot - 1) / 3][(slot - 1) % 3] == 'O');
+    board[(slot - 1) / 3][(slot - 1) % 3] = 'O';
+    cout << "AI chooses: " << slot << "\n";
+}
+
+
+void aiMove() {
+    if (difficulty == 1) {
+        aiRandomMove();  // Easy: Random move
+    } else if (difficulty == 2) {
+        aiRandomMove();  // Medium: Can implement basic strategy later (still random for simplicity)
+    } else {
+        int slot = bestMove();  // Hard: Best move using Minimax
+        board[(slot - 1) / 3][(slot - 1) % 3] = 'O';
+        cout << "AI chooses: " << slot << "\n";
+    }
+}int main() {
+    srand(time(0));
+
+    int slot;
+    int moves = 0;
+
+    cout << "Choose difficulty (1 = Easy, 2 = Medium, 3 = Hard): ";
+    cin >> difficulty;
+
+    while (true) {
+        displayBoard();
+
+        // Player's move
+        if (moves % 2 == 0) {
+            player = 1;
+            mark = 'X';
+
+            cout << "Player, enter a slot (1-9): ";
+            cin >> slot;
+
+            if (slot < 1 || slot > 9 || !placeMark(slot)) {
+                continue;
+            }
+        } else {
+            player = 2;
+            mark = 'O';
+
+            // AI makes its move
+            aiMove();
+        }
+
+        moves++;
+
+        // Check for win or draw
+        if (checkWin()) {
+            displayBoard();
+            if (player == 1) {
+                cout << "🎉 Player wins! 🎉\n";
+            } else {
+                cout << "🎉 AI wins! 🎉\n";
+            }
+            break;
+        }
+
+        if (isBoardFull()) {
+            displayBoard();
+            cout << "It's a draw! 🤝\n";
+            break;
+        }
+    }
+
+    return 0;
+}
