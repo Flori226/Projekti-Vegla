@@ -136,4 +136,56 @@ void aiMove() {
         board[(slot - 1) / 3][(slot - 1) % 3] = 'O';
         cout << "AI chooses: " << slot << "\n";
     }
+}int main() {
+    srand(time(0));
+
+    int slot;
+    int moves = 0;
+
+    cout << "Choose difficulty (1 = Easy, 2 = Medium, 3 = Hard): ";
+    cin >> difficulty;
+
+    while (true) {
+        displayBoard();
+
+        // Player's move
+        if (moves % 2 == 0) {
+            player = 1;
+            mark = 'X';
+
+            cout << "Player, enter a slot (1-9): ";
+            cin >> slot;
+
+            if (slot < 1 || slot > 9 || !placeMark(slot)) {
+                continue;
+            }
+        } else {
+            player = 2;
+            mark = 'O';
+
+            // AI makes its move
+            aiMove();
+        }
+
+        moves++;
+
+        // Check for win or draw
+        if (checkWin()) {
+            displayBoard();
+            if (player == 1) {
+                cout << "🎉 Player wins! 🎉\n";
+            } else {
+                cout << "🎉 AI wins! 🎉\n";
+            }
+            break;
+        }
+
+        if (isBoardFull()) {
+            displayBoard();
+            cout << "It's a draw! 🤝\n";
+            break;
+        }
+    }
+
+    return 0;
 }
