@@ -142,8 +142,12 @@ void aiMove() {
     int slot;
     int moves = 0;
 
-    cout << "Choose difficulty (1 = Easy, 2 = Medium, 3 = Hard): ";
+    cout << "Zgjedhni veshtiresin (1 = Easy, 2 = Medium, 3 = Hard): ";
     cin >> difficulty;
+ while(difficulty < 1 || difficulty > 3) {
+        cout << "Vlera e gabuar, shkruani vleren 1, 2 ose 3: ";
+        cin >> difficulty;
+    }
 
     while (true) {
         displayBoard();
